@@ -277,6 +277,17 @@ static int crawl_yesnoquit(lua_State *ls)
     return 1;
 }
 
+static int crawl_send_commands(lua_State *ls)
+{
+    int top = lua_gettop(ls);
+    for (int i = 1; i <= top; ++i) {
+        const command_type cmd = name_to_command(luaL_checkstring(ls, i));
+        const int key = command_to_key(cmd);
+        macro_sendkeys_end_add_expanded(key);
+    }
+    return 0;
+}
+
 static void crawl_sendkeys_proc(lua_State *ls, int argi)
 {
     if (lua_isstring(ls, argi))
@@ -1071,6 +1082,7 @@ static const struct luaL_reg crawl_clib[] =
     { "yesnoquit",          crawl_yesnoquit },
     { "kbhit",              crawl_kbhit },
     { "flush_input",        crawl_flush_input },
+    { "send_commands",      crawl_send_commands },
     { "sendkeys",           crawl_sendkeys },
     { "process_command",    crawl_process_command },
     { "process_keys",       crawl_process_keys },
